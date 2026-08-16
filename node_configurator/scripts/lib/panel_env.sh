@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+PANEL_ENV_FILE="${PROJECT_ROOT}/panel.env"
+
+save_current_panel_env() {
+  cat > "${PANEL_ENV_FILE}" <<EOF
+PANEL_ID="${PANEL_ID}"
+PANEL_USERNAME="${PANEL_USERNAME}"
+PANEL_PASSWORD="${PANEL_PASSWORD}"
+PANEL_PORT="${PANEL_PORT}"
+PANEL_WEB_BASE_PATH="${PANEL_WEB_BASE_PATH}"
+PANEL_ACCESS_URL="${PANEL_ACCESS_URL}"
+PANEL_API_URL="${PANEL_API_URL}"
+PANEL_API_TOKEN="${PANEL_API_TOKEN}"
+EOF
+
+  chmod 600 "${PANEL_ENV_FILE}"
+
+  echo
+  echo "Panel parameters saved:"
+  echo "  ${PANEL_ENV_FILE}"
+}

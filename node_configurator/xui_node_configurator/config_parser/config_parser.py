@@ -158,27 +158,7 @@ class TConfigParser:
     ) -> TNodeRegistrationConfig:
         return TNodeRegistrationConfig(
             name=self._required_str(data, TNodeRegistrationConfig.EYamlKey.NAME, path),
-            address=self._required_str(
-                data,
-                TNodeRegistrationConfig.EYamlKey.ADDRESS,
-                path,
-            ),
-            port=self._required_int(data, TNodeRegistrationConfig.EYamlKey.PORT, path),
-            api_url=self._required_str(
-                data,
-                TNodeRegistrationConfig.EYamlKey.API_URL,
-                path,
-            ),
-            token=self._required_str(
-                data,
-                TNodeRegistrationConfig.EYamlKey.TOKEN,
-                path,
-            ),
-            remark=self._required_str(
-                data,
-                TNodeRegistrationConfig.EYamlKey.REMARK,
-                path,
-            ),
+            remark=self._required_str(data, TNodeRegistrationConfig.EYamlKey.REMARK, path),
             verify_ssl=self._optional_bool(
                 data,
                 TNodeRegistrationConfig.EYamlKey.VERIFY_SSL,
@@ -186,6 +166,7 @@ class TConfigParser:
                 path,
             ),
         )
+
 
     def _parse_inbound(
         self,

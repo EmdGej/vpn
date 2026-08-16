@@ -5,7 +5,7 @@ import requests
 from xui_node_configurator.exceptions import TApiError
 from xui_node_configurator.utils.http.constants import EHttpMethod
 from xui_node_configurator.api.panel_url_builder import TPanelUrlBuilder
-from xui_node_configurator.api.xui_endpoints import EInboundEndpoint, ENodeEndpoint
+from xui_node_configurator.api.xui_endpoints import EInboundEndpoint, ENodeEndpoint, EServerEndpoint
 from xui_node_configurator.config import TPanelConfig
 
 
@@ -18,6 +18,7 @@ class TXuiApiClient:
 
     RESPONSE_SUCCESS_KEY = "success"
     RESPONSE_MESSAGE_KEY = "msg"
+    RESPONSE_OBJECT_KEY = "obj"
 
     def __init__(self, panel: TPanelConfig, url_builder: TPanelUrlBuilder):
         self._panel = panel
@@ -49,6 +50,14 @@ class TXuiApiClient:
         )
 
         return self._request_json(EHttpMethod.POST, url, payload)
+
+    def get_new_x25519_cert(self) -> dict[str, object]:
+        url = self._url_builder.build_api_url(
+            self._panel,
+            str(EServerEndpoint.GET_NEW_X25519_CERT),
+        )
+
+        return self._request_json(EHttpMethod.GET, url, None)
 
     def _request_json(
         self,

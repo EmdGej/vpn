@@ -1,3 +1,4 @@
+from xui_node_configurator.reality.reality_config_enricher import TRealityConfigEnricher
 from xui_node_configurator.api import TPanelUrlBuilder, TXuiApiClient
 from xui_node_configurator.config import TNodeConfig
 from xui_node_configurator.exceptions import TConfigError
@@ -33,9 +34,12 @@ class TNodeConfiguratorService:
             raise TConfigError("node.panel is required to create inbounds")
 
         client = TXuiApiClient(node.panel, self._url_builder)
-
+        reality_enricher = TRealityConfigEnricher(client)
         for inbound in node.inbounds:
-            payload = self._inbound_payload_builder.build(inbound)
+            enriched_inbound = reality_enricher.enrich_inbound(inbound)
+            payload = self._inbound_payload_builder.build(enriched_inbound)
+
+
 
             if self._dry_run:
                 print("DRY-RUN inbound payload:")
@@ -52,8 +56,12 @@ class TNodeConfiguratorService:
 
         client = TXuiApiClient(node.parent_master.panel, self._url_builder)
 
+        if node.panel is None:
+            raise TConfigError("node.panel is required to register node in parent master")
+
         payload = self._node_registration_payload_builder.build(
-            node.parent_master.node_registration
+            registration=node.parent_master.node_registration,
+            node_panel=node.panel,
         )
 
         if self._dry_run:

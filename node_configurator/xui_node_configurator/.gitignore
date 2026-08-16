@@ -1,0 +1,132 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# mypy / pyright / ruff
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.pyright/
+.ruff_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environments / secrets
+.env
+.env.*
+!.env.example
+
+# Local config files with secrets
+*.local.yaml
+*.local.yml
+secrets.yaml
+secrets.yml
+
+# Project YAMLs that may contain tokens/passwords
+xui_node_configurator/yamls/*.yaml
+xui_node_configurator/yamls/*.yml
+!xui_node_configurator/yamls/example.yaml
+!xui_node_configurator/yamls/example.yml
+
+# Logs
+*.log
+logs/
+
+# SQLite / databases
+*.sqlite
+*.sqlite3
+*.db
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDEs / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Poetry
+poetry.lock
+
+# PDM
+.pdm.toml
+.pdm-python
+__pypackages__/
+
+# Pipenv
+Pipfile.lock
+
+# Local scripts / temp
+tmp/
+temp/
+.local/

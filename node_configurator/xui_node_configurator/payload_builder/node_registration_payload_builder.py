@@ -1,7 +1,7 @@
 from enum import StrEnum
 from urllib.parse import urlparse
 
-from xui_node_configurator.config import TNodeRegistrationConfig
+from xui_node_configurator.config import TNodeRegistrationConfig, TPanelConfig
 
 
 class TNodeRegistrationPayloadBuilder:
@@ -25,12 +25,22 @@ class TNodeRegistrationPayloadBuilder:
 
     INBOUND_SYNC_MODE_ALL = "all"
 
-    def build(self, registration: TNodeRegistrationConfig) -> dict[str, object]:
-        parsed_api_url = urlparse(registration.api_url)
+    def build(
+        self,
+        registration: TNodeRegistrationConfig,
+        node_panel: TPanelConfig,
+    ) -> dict[str, object]:
+        parsed_api_url = urlparse(node_panel.api_url)
 
-        address = parsed_api_url.hostname or registration.address
-        port = parsed_api_url.port or registration.port
+        address = parsed_api_url.hostname
+        port = parsed_api_url.port
         scheme = parsed_api_url.scheme
+
+        if address is None:
+            raise ValueError("node panel api_url has invalid host")
+
+        if port is None:
+            raise ValueError("node panel api_url has invalid port")
 
         base_path = self._extract_base_path(parsed_api_url.path)
 
@@ -41,7 +51,7 @@ class TNodeRegistrationPayloadBuilder:
             str(self.EApiKey.ADDRESS): address,
             str(self.EApiKey.PORT): port,
             str(self.EApiKey.BASE_PATH): base_path,
-            str(self.EApiKey.API_TOKEN): registration.token,
+            str(self.EApiKey.API_TOKEN): node_panel.token,
             str(self.EApiKey.ENABLE): True,
             str(self.EApiKey.ALLOW_PRIVATE_ADDRESS): False,
             str(self.EApiKey.TLS_VERIFY_MODE): self._get_tls_verify_mode(
