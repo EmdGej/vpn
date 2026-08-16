@@ -51,6 +51,24 @@ class TXuiApiClient:
 
         return self._request_json(EHttpMethod.POST, url, payload)
 
+    def list_inbounds(self) -> dict[str, object]:
+        url = self._url_builder.build_api_url(
+            self._panel,
+            str(EInboundEndpoint.LIST),
+        )
+
+        return self._request_json(EHttpMethod.GET, url, None)
+
+
+    def list_nodes(self) -> dict[str, object]:
+        url = self._url_builder.build_api_url(
+            self._panel,
+            str(ENodeEndpoint.LIST),
+        )
+
+        return self._request_json(EHttpMethod.GET, url, None)
+
+
     def get_new_x25519_cert(self) -> dict[str, object]:
         url = self._url_builder.build_api_url(
             self._panel,
