@@ -20,6 +20,10 @@ SPIDER_X_LENGTH=""
 
 RUN_CONFIGURATOR="true"
 
+SKIP_INSTALL="false"
+AUTO_INSTALL="false"
+INSTALL_ANSWER_FILE=""
+
 usage() {
   cat <<EOF
 Usage:
@@ -27,27 +31,40 @@ Usage:
   Install master:
     ./scripts/install_node.sh \\
       --master \\
-      --panel-id <master_panel_id>
+      --panel-id kazakhstan
+
+  Install master with auto installer:
+    ./scripts/install_node.sh \\
+      --master \\
+      --panel-id kazakhstan \\
+      --auto-install \\
+      --install-answer-file templates/3xui_install_answers.txt
+
+  Use already installed panel as master:
+    ./scripts/install_node.sh \\
+      --master \\
+      --panel-id kazakhstan \\
+      --skip-install
 
   Install slave:
     ./scripts/install_node.sh \\
       --slave \\
-      --panel-id <slave_panel_id> \\
-      --node-id <slave_node_id> \\
-      --node-remark <slave_node_remark> \\
-      --parent-panel-id <master_panel_id> \\
-      --parent-api-url <https://MASTER_IP:PORT/WEBBASEPATH/panel/api> \\
-      --parent-api-token <MASTER_API_TOKEN> \\
-      --inbound-port <port> \\
-      --reality-target <reality_target> \\
-      --reality-server-names <reality_server_names> \\
-      --fingerprint <fingerprint> \\
-      --short-ids-count <short_ids_count> \\
-      --spider-x-length <spider_x_length>
+      --panel-id rus-panel \\
+      --node-id rus-node \\
+      --node-remark "Russia node" \\
+      --parent-panel-id kazakhstan \\
+      --parent-api-url "https://MASTER_IP:PORT/WEBBASEPATH/panel/api" \\
+      --parent-api-token "MASTER_API_TOKEN" \\
+      --inbound-port 14401 \\
+      --reality-target "www.google.com:443" \\
+      --reality-server-names "www.google.com,www.google.co.uk" \\
+      --fingerprint "firefox" \\
+      --short-ids-count 8 \\
+      --spider-x-length 15
 
 Options:
-  --master                         Install this server as master
-  --slave                          Install this server as slave
+  --master                         Treat current panel as master
+  --slave                          Treat current panel as slave
 
   --panel-id VALUE                 ID for this installed panel. Required.
 
@@ -65,8 +82,12 @@ Options:
   --short-ids-count VALUE          ShortIds count. Required for --slave.
   --spider-x-length VALUE          SpiderX length. Required for --slave.
 
-  --no-run                         Generate YAML but do not run Python configurator
-  -h, --help                       Show help
+  --skip-install                   Do not run 3x-ui installer, read existing panel data.
+  --auto-install                   Run 3x-ui installer with predefined answers.
+  --install-answer-file VALUE      File with installer answers, one line per answer.
+
+  --no-run                         Generate YAML but do not run Python configurator.
+  -h, --help                       Show help.
 EOF
 }
 
@@ -129,6 +150,18 @@ parse_args() {
         SPIDER_X_LENGTH="$2"
         shift 2
         ;;
+      --skip-install)
+        SKIP_INSTALL="true"
+        shift
+        ;;
+      --auto-install)
+        AUTO_INSTALL="true"
+        shift
+        ;;
+      --install-answer-file)
+        INSTALL_ANSWER_FILE="$2"
+        shift 2
+        ;;
       --no-run)
         RUN_CONFIGURATOR="false"
         shift
@@ -181,6 +214,20 @@ validate_args() {
   if [[ "${ROLE}" != "master" && "${ROLE}" != "slave" ]]; then
     echo "ERROR: role must be master or slave" >&2
     exit 1
+  fi
+
+  if [[ "${SKIP_INSTALL}" == "true" && "${AUTO_INSTALL}" == "true" ]]; then
+    echo "ERROR: --skip-install and --auto-install cannot be used together" >&2
+    exit 1
+  fi
+
+  if [[ "${AUTO_INSTALL}" == "true" ]]; then
+    require_arg "${INSTALL_ANSWER_FILE}" "--install-answer-file"
+
+    if [[ ! -f "${INSTALL_ANSWER_FILE}" ]]; then
+      echo "ERROR: install answer file not found: ${INSTALL_ANSWER_FILE}" >&2
+      exit 1
+    fi
   fi
 
   if [[ "${ROLE}" == "slave" ]]; then

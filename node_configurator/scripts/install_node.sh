@@ -18,13 +18,18 @@ main() {
   parse_args "$@"
   check_dependencies
 
-  install_3xui
+  if [[ "${SKIP_INSTALL}" == "true" ]]; then
+    echo "Skipping 3x-ui installation because --skip-install was specified."
+  else
+    install_3xui
+  fi
+
   parse_panel_installation
   save_current_panel_env
 
   if [[ "${ROLE}" == "master" ]]; then
     echo
-    echo "Master panel installed."
+    echo "Master panel installed/configured."
     echo "Panel parameters saved to: ${PANEL_ENV_FILE}"
     echo "Python configurator was not started."
     exit 0
