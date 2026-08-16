@@ -1,0 +1,2 @@
+class TBaseError(Exception):
+    pass
