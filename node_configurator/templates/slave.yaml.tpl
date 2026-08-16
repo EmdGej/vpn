@@ -8,11 +8,11 @@ panel:
   timeout: 30
 
 parent_master:
-  id: "__MASTER_ID__"
+  id: "__PARENT_PANEL_ID__"
 
   panel:
-    api_url: "__MASTER_API_URL__"
-    token: "__MASTER_API_TOKEN__"
+    api_url: "__PARENT_PANEL_API_URL__"
+    token: "__PARENT_PANEL_API_TOKEN__"
     verify_ssl: false
     timeout: 30
 
@@ -56,7 +56,6 @@ inbounds:
 
         serverNames:
 __REALITY_SERVER_NAMES__
-
         minClientVer: ""
         maxClientVer: ""
         maxTimediff: 0

@@ -8,21 +8,21 @@ yaml_escape() {
   printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
-render_server_names_yaml() {
+render_server_names_yaml_to_file() {
   local csv="$1"
-  local result=""
+  local output_file="$2"
   local item=""
+
+  : > "${output_file}"
 
   IFS=',' read -ra items <<< "${csv}"
 
   for item in "${items[@]}"; do
     item="$(echo "${item}" | xargs)"
     if [[ -n "${item}" ]]; then
-      result="${result}          - \"$(yaml_escape "${item}")\""$'\n'
+      printf '          - "%s"\n' "$(yaml_escape "${item}")" >> "${output_file}"
     fi
   done
-
-  printf '%s' "${result}"
 }
 
 generate_slave_yaml() {
@@ -35,8 +35,10 @@ generate_slave_yaml() {
 
   GENERATED_YAML_FILE="${GENERATED_YAML_DIR}/${NODE_ID}.yaml"
 
-  local server_names_yaml
-  server_names_yaml="$(render_server_names_yaml "${REALITY_SERVER_NAMES}")"
+  local server_names_file
+  server_names_file="$(mktemp)"
+
+  render_server_names_yaml_to_file "${REALITY_SERVER_NAMES}" "${server_names_file}"
 
   cp "${TEMPLATE_FILE}" "${GENERATED_YAML_FILE}"
 
@@ -58,14 +60,19 @@ generate_slave_yaml() {
 
   rm -f "${GENERATED_YAML_FILE}.bak"
 
-  python3 - <<PY
-from pathlib import Path
+  local result_file
+  result_file="$(mktemp)"
 
-path = Path("${GENERATED_YAML_FILE}")
-content = path.read_text()
-content = content.replace("__REALITY_SERVER_NAMES__\n", """${server_names_yaml}""")
-path.write_text(content)
-PY
+  while IFS= read -r line; do
+    if [[ "${line}" == "__REALITY_SERVER_NAMES__" ]]; then
+      cat "${server_names_file}" >> "${result_file}"
+    else
+      printf '%s\n' "${line}" >> "${result_file}"
+    fi
+  done < "${GENERATED_YAML_FILE}"
+
+  mv "${result_file}" "${GENERATED_YAML_FILE}"
+  rm -f "${server_names_file}"
 
   chmod 600 "${GENERATED_YAML_FILE}"
 
